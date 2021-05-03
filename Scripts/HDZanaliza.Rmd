@@ -1,0 +1,59 @@
+---
+title: "HDZ na društvenim mrežama"
+author: "Lux"
+date: '03 05 2021'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r paketi, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(janitor)
+library(tidyverse)
+library(httr)
+library(jsonlite)
+library(lubridate)
+library(tidytext)
+library(data.table)
+library(wordcloud)
+library(knitr)
+library(gridExtra)
+library(grid)
+library(topicmodels)
+library(rvest)
+library(igraph)
+library(ggraph)
+library(scales)
+library(widyr)
+```
+
+
+```{r podatci, echo=FALSE, message=FALSE, warning=FALSE}
+hdz2 <- read.csv2("../Data/HDZscv.csv") %>%
+  select(X.3) %>%
+  row_to_names(.,1) %>%
+  mutate(Published = substr(Published,1,10)) 
+mutate(Datum = as.Date(Published,"d%.m%.Y%"))
+
+Datum  <-mutate(hdz2, b2= as.Date(Published, format= "%d.%m.%Y")) %>%
+  select(-Published) %>%
+  rename(Datum =b2)
+
+
+hdz <- readxl::read_excel("../Data/HDZ.xlsx") %>% 
+  row_to_names(.,1) %>% 
+  clean_names() %>%
+  select(-c(1,17:25,28:33,37:41)) %>%
+  select(-published,-indexed,-category,-image,-languages) %>%
+  cbind.data.frame(Datum)
+```
+
+
+
+
+## Analiza
+

@@ -40,3 +40,5 @@ Sve javno dostupne objave na digitalnih platformama Facebook i Twitter u razdobl
  
 Populacija: 
 Sve objave na digitalnim platformama Facebook  i Twitter objavljene u razdoblju od 18. travnja do 3. svibnja 2021. godine. koje u sebi sadrže pojam HDZ.
+
+Rezultati dostupni na [poveznici]().
