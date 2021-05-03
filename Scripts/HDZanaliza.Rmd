@@ -31,7 +31,6 @@ library(scales)
 library(widyr)
 ```
 
-
 ```{r podatci, echo=FALSE, message=FALSE, warning=FALSE}
 hdz2 <- read.csv2("../Data/HDZscv.csv") %>%
   select(X.3) %>%
@@ -52,6 +51,61 @@ hdz <- readxl::read_excel("../Data/HDZ.xlsx") %>%
   cbind.data.frame(Datum)
 ```
 
+```{r leksikoni, echo=FALSE, message=FALSE, warning=FALSE}
+source("../Mfiles/mfiles.R")
+
+CroSentilex_n <- read.delim(mfiles_downlaod_txt("0", 136679, 136711, ext = ".txt"),
+                            header = FALSE,
+                            sep = " ",
+                            stringsAsFactors = FALSE) %>% 
+  rename(word = "V1", sentiment = "V2" ) %>%
+  mutate(brija = "NEG")
+
+CroSentilex_p <- read.delim(mfiles_downlaod_txt("0", 136681, 136713, ext = ".txt"),
+                            header = FALSE,
+                            sep = " ",
+                            stringsAsFactors = FALSE) %>% 
+  rename(word = "V1", sentiment = "V2" ) %>%
+  mutate(brija = "POZ")
+Crosentilex_sve <- rbind(setDT(CroSentilex_n), setDT(CroSentilex_p))
+#head(Crosentilex_sve)
+
+CroSentilex_Gold  <- read.delim2(mfiles_downlaod_txt("0", 136680, 136712, ext = ".txt"),
+                                 header = FALSE,
+                                 sep = " ",
+                                 stringsAsFactors = FALSE) %>%
+  rename(word = "V1", sentiment = "V2" ) 
+
+CroSentilex_Gold[1,1] <- "dati"
+CroSentilex_Gold$sentiment <- str_replace(CroSentilex_Gold$sentiment , "-", "1")
+CroSentilex_Gold$sentiment <- str_replace(CroSentilex_Gold$sentiment , "\\+", "2")
+CroSentilex_Gold$sentiment <- as.numeric(unlist(CroSentilex_Gold$sentiment))
+#head(CroSentilex_Gold)
+
+# leksikoni
+stopwords_cro <- get_stopwords(language = "hr", source = "stopwords-iso")
+my_stop_words <- tibble(
+  word = c(
+    "jedan",
+    "e","prvi", "dva","dvije","drugi",
+    "tri","tre?i","pet","kod",
+    "ove","ova",  "ovo","bez",
+    "evo","oko",  "om", "ek",
+    "mil","tko","?est", "sedam",
+    "osam",   "?im", "zbog",
+    "prema", "dok","zato", "koji", 
+    "im", "?ak","me?u", "tek",
+    "koliko", "tko","kod","poput", 
+    "ba?", "dakle", "osim", "svih", 
+    "svoju", "odnosno", "gdje",
+    "kojoj", "ovi", "toga","ima","treba","sad","to","kad", "?e","ovaj","?ta","onda","ce","ko"
+  ),
+  lexicon = "lux"
+)
+stop_corpus <- my_stop_words %>%
+  bind_rows(stopwords_cro)
+
+```
 
 
 
