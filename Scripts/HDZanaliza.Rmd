@@ -244,9 +244,99 @@ vazni_domena
 ```
 
 
+### Deskriptiva
+
+```{r deskriptiva, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+## Deksriptiva ----
+
+
+#broj ?lanaka, pogleda i komentara po kandidatu
+options(scipen = 999)
+
+nazivi_kolona_k = c("Kandidat","Broj ?lanaka","Broj komentara", "Broj pogleda", "Pogledi po ?lanku", "Komentari po ?lanku" )
+
+hdz %>% 
+  unique(.) %>%
+  group_by(source) %>%
+  mutate_at(vars(-kandidat), as.numeric) %>% 
+  summarise(broj_clanaka = n_distinct(id),
+            broj_komentara = sum(pogledi),
+            broj_pogleda = sum(brojKomentara),
+            udio_pogleda = sum(brojKomentara) / n_distinct(id),
+            udio_komentara = sum(pogledi) / n_distinct(id)) %>% 
+  #  ungroup() %>%
+  rbind(c("Ukupno",  sum(.$broj_clanaka),
+          sum(.$broj_komentara), sum(.$broj_pogleda),
+          mean(.$udio_pogleda), mean(.$udio_komentara))) %>%
+  mutate_at(vars(-kandidat), as.numeric) %>% 
+  arrange(desc(broj_clanaka)) %>%
+  kable(., format = "pandoc",
+        format.args = list(decimal.mark = ".",
+                           big.mark = "," ),
+        col.names = nazivi_kolona_k,
+        digits = 0)
+
+
+```
 
 
 
+### Oblak riječi
+
+```{r oblak, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+
+hdz %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_corpus, by = "word") %>%
+  group_by(word) %>%
+  count() %>%
+  ungroup() %>%
+  arrange(desc(n)) %>%
+  ungroup() %>%
+  slice(5:250)-> wcl
+
+
+
+wcl %>%
+  with(wordcloud(word, n, max.words = 150, colors =  c("#56B4E9", "#E69F00"))) 
+
+
+# BIGRAMI
+
+
+hdz %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>% 
+  mutate(naziv = row_number()) %>%
+  select(naziv, bigram)-> kandidati_bigram 
+
+#%>%
+#  count(bigram, sort = TRUE) 
+
+
+bigrams_separated <- kandidati_bigram %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_corpus$word) %>%
+  filter(!word2 %in% stop_corpus$word) %>%
+  filter(!grepl("\\d+", word1)) %>%
+  filter(!grepl("\\d+", word2)) %>% 
+  filter(!grepl("^[a-zA-Z]$", word1)) %>%
+  filter(!grepl("^[a-zA-Z]$", word2)) 
+
+# new bigram counts:
+bigram_counts <- bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+
+bigrams_united <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ")
+
+bigrams_united %>%
+  group_by(bigram) %>%
+  tally %>%
+  filter(n < 58) %>%
+  with(wordcloud(bigram, n, max.words = 150, colors =  c("#56B4E9", "#E69F00"))) 
+```
 
 
 
