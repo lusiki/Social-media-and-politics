@@ -110,15 +110,28 @@ stop_corpus <- my_stop_words %>%
 
 ### Općenito
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 hdz %>%
   group_by(type,source) %>%
-  summarise(Aktivnost = n()) %>%
-  arrange(desc(Aktivnost)) %>%
-  kable() %>% kable_styling()
+  summarise(Broj = n()) %>%
+  arrange(desc(Broj)) %>%
+  ungroup() %>%
+  select(Izvor = source,Vrsta = type,Broj) %>%
+  kable() %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
   
+## No GDPR    
+hdz %>%
+  group_by(author) %>%
+  summarise(Broj = n()) %>%
+  arrange(desc(Broj)) %>%
+  ungroup() %>%
+  kable() %>% 
+  scroll_box(width = "700px", height = "400px")
 
 
 
