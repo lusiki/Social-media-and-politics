@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
 ```{r paketi, echo=FALSE, message=FALSE, warning=FALSE}
@@ -29,16 +29,17 @@ library(igraph)
 library(ggraph)
 library(scales)
 library(widyr)
+library(kableExtra)
 ```
 
 ```{r podatci, echo=FALSE, message=FALSE, warning=FALSE}
 hdz2 <- read.csv2("../Data/HDZscv.csv") %>%
   select(X.3) %>%
   row_to_names(.,1) %>%
-  mutate(Published = substr(Published,1,10)) 
-mutate(Datum = as.Date(Published,"d%.m%.Y%"))
+  mutate(Published = substr(Published,1,10)) #%>%
+#mutate(Datum = as.Date(Published,"d%.m%.Y%"))
 
-Datum  <-mutate(hdz2, b2= as.Date(Published, format= "%d.%m.%Y")) %>%
+Datum  <- mutate(hdz2, b2= as.Date(Published, format= "%d.%m.%Y")) %>%
   select(-Published) %>%
   rename(Datum =b2)
 
@@ -104,6 +105,75 @@ my_stop_words <- tibble(
 )
 stop_corpus <- my_stop_words %>%
   bind_rows(stopwords_cro)
+
+```
+
+### Najčešći unigrami i bigrami
+
+```{r najbitnije_rijeci, echo=FALSE, message=FALSE, warning=FALSE}
+
+##korpus rijeci
+
+hdz %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_corpus, by = "word") %>%
+  mutate(word = gsub("\\d+", NA, word)) %>%
+  mutate(word = gsub("^[a-zA-Z]$", NA, word)) %>%
+  filter(!is.na(word)) -> rijeci_clean
+
+
+rijeci_clean %>%
+  group_by(word) %>%
+  count() %>%
+  arrange(desc(n)) %>% 
+  ungroup() %>%
+  filter(n>50|n<460)-> pregled
+
+
+pregled %>%
+  slice(-c(1:5))%>%
+  filter(n>50) %>%
+  kable() %>%
+    kable_styling() %>%
+    scroll_box(width = "500px", height = "400px")
+
+
+
+## End(Not run)
+
+
+
+##korpus bigram
+
+hdz %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2) %>%
+  count(bigram, sort = TRUE) -> kandidati_bigram 
+
+
+bigrams_separated <- kandidati_bigram %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_corpus$word) %>%
+  filter(!word2 %in% stop_corpus$word) %>%
+  filter(!grepl("\\d+", word1)) %>%
+  filter(!grepl("\\d+", word2)) %>% 
+  filter(!grepl("^[a-zA-Z]$", word1)) %>%
+  filter(!grepl("^[a-zA-Z]$", word2)) 
+
+# new bigram counts:
+bigram_counts <- bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+
+bigrams_united <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ") %>%
+  slice(-c(1:13))
+
+bigrams_united %>% 
+  slice(1:200) %>%
+  kable() %>%
+  kable_styling() %>%
+  scroll_box(width = "500px", height = "400px")
 
 ```
 
