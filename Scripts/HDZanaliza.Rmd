@@ -108,6 +108,24 @@ stop_corpus <- my_stop_words %>%
 
 ```
 
+### Općenito
+
+```{r}
+
+
+hdz %>%
+  group_by(type,source) %>%
+  summarise(Aktivnost = n()) %>%
+  arrange(desc(Aktivnost)) %>%
+  kable() %>% kable_styling()
+  
+
+
+
+```
+
+
+
 ### Najčešći unigrami i bigrami
 
 ```{r najbitnije_rijeci, echo=FALSE, message=FALSE, warning=FALSE}
@@ -344,7 +362,6 @@ bigrams_united %>%
   with(wordcloud(bigram, n, max.words = 150, colors =  c("#56B4E9", "#E69F00")))
 ```
 
-
 ### Sentiment
 
 ```{r sentiment, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=7}
@@ -476,7 +493,6 @@ najvaznije_rijeci_po_temama_kandidati %>%
 
 gg_tematska
 ```
-
 
 
 ### Riječi kroz vrijeme
