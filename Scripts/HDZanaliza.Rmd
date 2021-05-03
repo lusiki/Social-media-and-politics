@@ -333,14 +333,16 @@ bigram_counts <- bigrams_filtered %>%
 bigrams_united <- bigrams_filtered %>%
   unite(bigram, word1, word2, sep = " ")
 
+```
+
+
+```{r oblak2, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=4}
 bigrams_united %>%
   group_by(bigram) %>%
   tally %>%
   filter(n < 58) %>%
-  with(wordcloud(bigram, n, max.words = 150, colors =  c("#56B4E9", "#E69F00"))) 
+  with(wordcloud(bigram, n, max.words = 150, colors =  c("#56B4E9", "#E69F00")))
 ```
-
-
 
 
 
