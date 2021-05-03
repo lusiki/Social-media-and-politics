@@ -24,7 +24,7 @@ Specificirani ciljevi:
 -	Koliko često korisnici digitalnih platformi Facebook i Twitter spominju Hrvatsku demokratsku zajednicu u svojim objavama na Facebooku i Twitteru
 <br>
 
--	kolika je raspršenost pojedinaca (profila) koji iznose svoja mišljenja i stavove o Hrvatskoj demokratskoj zajednici (objavljuju li uvijek isti profili objave o HDZ-u)
+-	Kolika je raspršenost pojedinaca (profila) koji iznose svoja mišljenja i stavove o Hrvatskoj demokratskoj zajednici (objavljuju li uvijek isti profili objave o HDZ-u)
 <br>
 
 - Postoje li čvorišta iz kojih kreće u prosjeku relativno veći broj objava o  Hrvatskoj demokratskoj  zajednici te definirati doseg objava iz čvorišta
@@ -45,9 +45,15 @@ Specificirani ciljevi:
 -	Razlike i promjene kroz vrijeme
  
 Uzorak:
+
+<br>
+
 Sve javno dostupne objave na digitalnih platformama Facebook i Twitter u razdoblju od 18. travnja do 3. svibnja 2021. godine. koje u sebi sadrže pojam HDZ.
  
 Populacija: 
+
+<br>
+
 Sve objave na digitalnim platformama Facebook  i Twitter objavljene u razdoblju od 18. travnja do 3. svibnja 2021. godine. koje u sebi sadrže pojam HDZ.
 
 Rezultati na [poveznici](https://raw.githack.com/lusiki/Social-media-and-politics/main/Scripts/HDZanaliza.html).
