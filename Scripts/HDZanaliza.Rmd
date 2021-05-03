@@ -479,6 +479,47 @@ gg_tematska
 
 
 
+### Riječi kroz vrijeme
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=7}
+
+rijeci_clean %>%
+ # mutate(Datum = floor_date(dejt, "quarter")) %>% 
+  group_by(Datum) %>%
+  count(word) %>% 
+  mutate(gn = sum(n)) %>% 
+  filter(word %in% c("pupavac", "milanović", "plenković", "vlada","sabor","korupcija","sdp", "janaf","pošta","hbor")) %>%
+  ggplot(., aes(Datum, n / gn)) + 
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ word, scales = "free_y") +
+  scale_y_continuous(labels = scales::percent_format()) -> rijeci_durch_vrijeme_1
+
+# 
+# hdz %>%
+#   unnest_tokens(word, tekst) %>%
+#   anti_join(stop_corpus, by = "word") %>%
+#   mutate(word = gsub("\\d+", NA, word)) %>%
+#   mutate(word = gsub("^[a-zA-Z]$", NA, word)) %>%
+#   filter(!is.na(word)) %>%
+#   mutate(Datum = floor_date(dejt, "quarter")) %>%
+#   group_by(Datum) %>%
+#   count(word) %>%
+#   mutate(gn = sum(n)) %>%
+#   filter(word %in% c("okršaj", "pravila", "tržište","cammeo", "dozvole", "ministar", "usluga", "inspekcija")) %>%
+#   ggplot(., aes(Datum, n / gn)) + 
+#   geom_point() +
+#   geom_smooth() +
+#   facet_wrap(~ word, scales = "free_y") +
+#   scale_y_continuous(labels = scales::percent_format()) -> rijeci_durch_vrijeme_2
+
+  
+  rijeci_durch_vrijeme_1
+
+  # rijeci_durch_vrijeme_2
+
+
+```
 
 
 
