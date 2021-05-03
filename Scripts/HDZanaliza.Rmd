@@ -243,7 +243,6 @@ vazni_domena <- rijeci_clean %>%
 vazni_domena
 ```
 
-
 ### Deskriptiva
 
 ```{r deskriptiva, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
@@ -280,10 +279,13 @@ hdz %>%
 ```
 
 
-
 ### Oblak riječi
 
-```{r oblak, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+Prvi oblak se odnosi na unigrame.
+
+Drugi oblak su bigrami.
+
+```{r oblak, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=4}
 
 hdz %>%
   unnest_tokens(word, text) %>%
