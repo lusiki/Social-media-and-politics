@@ -110,6 +110,9 @@ stop_corpus <- my_stop_words %>%
 
 ### Općenito
 
+Broj profila koji su objavili nešto o HDZ-u: `r length(unique(hdz$author))`.<br>
+Broj aktivnosti: `r length(unique(hdz$url))`.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 
@@ -123,6 +126,50 @@ hdz %>%
   kable_styling() %>%
   scroll_box(width = "700px", height = "400px")
 
+# Najvažniji autori
+
+hdz %>% 
+  filter(!is.na(author)) %>%
+  mutate(ukupno = n()) %>%
+  group_by(author) %>%
+  mutate(poAutoru = n()) %>%
+  summarise(Vaznost = (poAutoru / ukupno) *100) %>%
+  arrange(desc(Vaznost)) %>%
+  ungroup()%>%
+  distinct(author, Vaznost) %>%
+  top_n(45) %>%
+  kable() %>% 
+  scroll_box(width = "700px", height = "400px")
+
+# Najviše followera
+
+hdz <- hdz %>%
+  filter(!is.na(author)) %>%
+  filter(!is.na(publika)) %>%
+  mutate(publika = as.numeric(as.character(audience))) %>%
+  group_by(author) %>%
+  summarise(Publika = sum(publika))
+
+hdz%>%
+  arrange(desc(Publika))
+  
+  
+  
+  ungroup() %>%
+  group_by(source) %>%
+  mutate(audience = as.numeric(audience)) %>%
+  summarise(publike = sum(audience, na.rm = TRUE))
+  filter(!is.na(author)) %>%
+  arrange(desc(audience)) %>%
+  summarise(PUblika = sum(audience)) %>%
+  View()
+
+hdz %>%
+  mutate(publika = as.numeric(audience)) %>%
+  group_by(source) %>%
+  summarise(publika = sum(publika, na.rm = TRUE)) %>%
+  kable() %>% 
+  scroll_box(width = "700px", height = "400px")
   
 ## No GDPR    
 hdz %>%
@@ -132,6 +179,9 @@ hdz %>%
   ungroup() %>%
   kable() %>% 
   scroll_box(width = "700px", height = "400px")
+
+
+
 
 
 
