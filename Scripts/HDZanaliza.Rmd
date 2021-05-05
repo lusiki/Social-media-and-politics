@@ -250,7 +250,10 @@ hdz %>%
 **Postoje li čvorišta iz kojih kreće u prosjeku relativno veći broj objava o Hrvatskoj demokratskoj zajednici te definirati doseg objava iz čvorišta**
 <br>
 <br>
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+options(digits = 2)
 hdz %>%
   filter(source == "Facebook") %>%
   filter(type != "comment") %>%
@@ -260,7 +263,7 @@ hdz %>%
   summarise(Udio = (PoAutoru / UkupnoObjava)*100) %>%
   distinct(author,Udio) %>%
   arrange(desc(Udio)) %>%
-  kable(caption = "Doseg objava iz čvorišta") %>% 
+  kable(caption = "Doseg objava iz čvorišta %") %>% 
   kable_styling() %>%
   scroll_box(width = "700px", height = "400px")
 
@@ -269,7 +272,6 @@ hdz %>%
 
 ```
 
-  
 ```{r, eval=FALSE,echo=FALSE}
 hdz %>%
   group_by(type,source) %>%
@@ -347,18 +349,53 @@ hdz %>%
 <br>
 <br>
 
+
+
+<br>
+Udio originalnog sadržaja na FB :
+<br>
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+#options(digits = 2)
+# hdz %>% filter(source == "Twitter") %>%
+#   mutate(Ukupno = n()) %>%
+#   mutate(UkRetw = sum(retweets),
+#          ) %>%
+#   mutate(UkupnoSve = Ukupno + UkRetw) %>%
+#   summarise(UdioRetweet = (UkRetw / UkupnoSve)*100) %>%
+#   distinct() -> postoRetweetowa
+
+
+options(digits = 2)
 hdz %>% filter(source == "Twitter") %>%
   mutate(Ukupno = n()) %>%
-  mutate(UkRetw = sum(retweets)) %>%
-  mutate(UkupnoSve = Ukupno + UkRetw) %>%
-  summarise(UdioRetweet = (UkRetw / UkupnoSve)*100) %>%
-  distinct() -> postoRetweetowa
+#  filter(source != "comment") %>%
+  group_by(type) %>%
+  mutate(PoVrsti = n()) %>%
+  summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
+  distinct() %>%
+  arrange(desc(UdioOrig)) %>%
+  kable(caption = "Udio originalnog sadržaja na Twitteru %")
+  
 ```
 
+<br>
+Udio originalnog sadržaja na FB :
+<br>
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+hdz %>% filter(source == "Facebook") %>%
+  mutate(Ukupno = n()) %>%
+  filter(source != "comment") %>%
+  group_by(type) %>%
+  mutate(PoVrsti = n()) %>%
+  summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
+  distinct() %>%
+  arrange(desc(UdioOrig)) %>%
+  kable(caption = "Udio originalnog sadržaja na FB %")
 
-Udio retweet-ova `r postoRetweetowa` %.
+```
 
+<br>
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 hdz %>%
   filter(source == "Twitter") %>%
@@ -369,7 +406,7 @@ hdz %>%
   arrange(desc(Retweet))
 ```
 
-
+**Atributi koji najčešće spominju u objavama u kojima se spominje Hrvatska demokratska zajednica te prepoznati sentiment (pozitivno, negativno, neutralno) tih atributa**
 <br>
 <br>
 ### Najčešći unigrami i bigrami
@@ -542,7 +579,6 @@ hdz %>%
 
 ```
 
-
 ### Oblak riječi
 
 Prvi oblak se odnosi na unigrame.
@@ -598,7 +634,6 @@ bigrams_united <- bigrams_filtered %>%
   unite(bigram, word1, word2, sep = " ")
 
 ```
-
 
 ```{r oblak2, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=5}
 bigrams_united %>%
@@ -740,6 +775,7 @@ najvaznije_rijeci_po_temama_kandidati %>%
 gg_tematska
 ```
 
+**Razlike i promjene kroz vrijeme**
 
 ### Riječi kroz vrijeme
 
