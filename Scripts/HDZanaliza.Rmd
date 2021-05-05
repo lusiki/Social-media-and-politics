@@ -343,6 +343,38 @@ hdz %>%
 
 
 ```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+options(digits = 2)
+
+hdz %>% filter(source == "Facebook") %>%
+  mutate(Ukupno = n()) %>%
+  mutate(author = tolower(author)) %>% 
+  filter(str_detect(author, 'hdz')) %>%
+#  filter(source != "comment") %>%
+  group_by(type) %>%
+  mutate(PoVrsti = n()) %>%
+  summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
+  distinct() %>%
+  arrange(desc(UdioOrig)) %>%
+  kable(caption = "Udio originalnog sadržaja na FB % od HDZ profila")  
+
+
+hdz %>% filter(source == "Facebook") %>%
+  mutate(Ukupno = n()) %>%
+  mutate(author = tolower(author)) %>% 
+  filter(!str_detect(author, 'hdz')) %>%
+#  filter(source != "comment") %>%
+  group_by(type) %>%
+  mutate(PoVrsti = n()) %>% 
+  summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
+  distinct() %>%
+  arrange(desc(UdioOrig)) %>%
+  kable(caption = "Udio originalnog sadržaja na FB % od ne HDZ profila") 
+```
+
+
 <br>
 <br>
 **Udio objava o Hrvatskoj demokratskoj zajednici koji su izvorni sadržaj i udio objava koji su nastali kao dijeljenje već postojećeg sadržaja (share i retweet)**
