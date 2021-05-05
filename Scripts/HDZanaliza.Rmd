@@ -109,9 +109,11 @@ stop_corpus <- my_stop_words %>%
 ```
 
 ### Općenito
-
+<br>
+<br>
 **Koliko često korisnici digitalnih platformi Facebook i Twitter spominju Hrvatsku demokratsku zajednicu u svojim objavama na Facebooku i Twitteru**
-
+<br>
+<br>
 Broj profila koji su objavili nešto o HDZ-u: `r length(unique(hdz$author))`.<br>
 Broj aktivnosti: `r length(unique(hdz$url))`.
 
@@ -210,9 +212,11 @@ hdz %>%
   scroll_box(width = "700px", height = "400px")
 
 ```
-
+<br>
+<br>
 **Kolika je raspršenost pojedinaca (profila) koji iznose svoja mišljenja i stavove o Hrvatskoj demokratskoj zajednici (objavljuju li uvijek isti profili objave o HDZ-u)**  
-
+<br>
+<br>
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 hdz %>%
   filter(source == "Facebook") %>%
@@ -221,17 +225,31 @@ hdz %>%
   summarise( BrojObjava = n()) %>%
   arrange(desc(BrojObjava)) %>%
   ggplot(.,aes(BrojObjava)) + 
-  geom_histogram() 
+  geom_histogram() + 
+  ggtitle("Raspršenost objava") +
+  theme_bw()
+
+hdz %>%
+  filter(source == "Facebook") %>%
+  filter(type != "comment") %>%
+  group_by(author) %>%
+  summarise( BrojObjava = n()) %>%
+  top_n(.,20) %>%
+  arrange(desc((BrojObjava))) %>%
+  kable(caption = "Profili (25) koji najviše objavljuju") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
   
   
-  
-  
+
   
 ```
 
-
+<br>
+<br>
 **Postoje li čvorišta iz kojih kreće u prosjeku relativno veći broj objava o Hrvatskoj demokratskoj zajednici te definirati doseg objava iz čvorišta**
-
+<br>
+<br>
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 hdz %>%
   filter(source == "Facebook") %>%
@@ -242,9 +260,12 @@ hdz %>%
   summarise(Udio = (PoAutoru / UkupnoObjava)*100) %>%
   distinct(author,Udio) %>%
   arrange(desc(Udio)) %>%
-  kable(caption = "Udio objava u ukupnim objavama po profilu") %>% 
+  kable(caption = "Doseg objava iz čvorišta") %>% 
   kable_styling() %>%
   scroll_box(width = "700px", height = "400px")
+
+
+# vidi HDZ u nazivu profila
 
 ```
 
@@ -320,9 +341,37 @@ hdz %>%
 
 
 ```
+<br>
+<br>
+**Udio objava o Hrvatskoj demokratskoj zajednici koji su izvorni sadržaj i udio objava koji su nastali kao dijeljenje već postojećeg sadržaja (share i retweet)**
+<br>
+<br>
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+hdz %>% filter(source == "Twitter") %>%
+  mutate(Ukupno = n()) %>%
+  mutate(UkRetw = sum(retweets)) %>%
+  mutate(UkupnoSve = Ukupno + UkRetw) %>%
+  summarise(UdioRetweet = (UkRetw / UkupnoSve)*100) %>%
+  distinct() -> postoRetweetowa
+```
 
 
+Udio retweet-ova `r postoRetweetowa` %.
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+hdz %>%
+  filter(source == "Twitter") %>%
+  mutate(Ukupno = n()) %>%
+  mutate(UkRetw = sum(retweets)) %>%
+  group_by(author) %>%
+  summarise(Retweet = sum(retweets, na.rm = TRUE)) %>%
+  arrange(desc(Retweet))
+```
+
+
+<br>
+<br>
 ### Najčešći unigrami i bigrami
 
 ```{r najbitnije_rijeci, echo=FALSE, message=FALSE, warning=FALSE}
