@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 ```
 
 ```{r paketi, echo=FALSE, message=FALSE, warning=FALSE}
@@ -382,10 +382,6 @@ hdz %>% filter(source == "Facebook") %>%
 <br>
 
 
-
-<br>
-Udio originalnog sadržaja na FB :
-<br>
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 #options(digits = 2)
