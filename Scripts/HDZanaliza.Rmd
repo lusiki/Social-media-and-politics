@@ -110,12 +110,146 @@ stop_corpus <- my_stop_words %>%
 
 ### Općenito
 
+**Koliko često korisnici digitalnih platformi Facebook i Twitter spominju Hrvatsku demokratsku zajednicu u svojim objavama na Facebooku i Twitteru**
+
 Broj profila koji su objavili nešto o HDZ-u: `r length(unique(hdz$author))`.<br>
 Broj aktivnosti: `r length(unique(hdz$url))`.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
+hdz <- hdz %>%
+  mutate(impressions = as.numeric(impressions),
+         comments = as.numeric(comments),
+         engagements = as.numeric(engagements),
+         likes = as.numeric(likes),
+         retweets = as.numeric(retweets),
+         audience = as.numeric(audience))
 
+
+hdz %>% group_by(source) %>%
+  summarise(BrojObjava = n()) %>%
+  kable(caption = "Broj objava po platformi") 
+
+hdz %>% group_by(type, source) %>%
+  summarise(BrojObjava = n()) %>%
+  arrange(desc(BrojObjava)) %>%
+  kable(caption = "Broj objava po platformi i vrsti objave") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+
+hdz %>%
+  filter(source == "Twitter") %>%
+  group_by(author) %>%
+  summarise(BrojObjavaTwitter= n()) %>%
+  arrange(desc(BrojObjavaTwitter)) %>%
+  kable(caption = "Broj objava na Twitteru prema autorima") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+hdz %>%
+  filter(source == "Facebook") %>%
+  group_by(author) %>%
+  summarise(BrojObjavaFB= n()) %>%
+  arrange(desc(BrojObjavaFB)) %>%
+  kable(caption = "Broj objava na FB prema autorima") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+hdz %>%
+  select(author, audience,source) %>%
+  filter(!is.na(author)) %>%
+  filter(source == "Twitter") %>%
+  distinct() %>%
+  arrange(desc(audience)) %>%
+  kable(caption = "Broj pratitelja na Twitteru po profilu") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+hdz %>%
+  select(author, audience,source) %>%
+  filter(!is.na(author)) %>%
+  filter(source == "Facebook") %>%
+  distinct() %>%
+  arrange(desc(audience)) %>%
+  kable(caption = "Broj pratitelja na FB po profilu") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+
+hdz %>%
+  filter(source == "Facebook") %>%
+  filter(type != "comment") %>%
+  group_by(author,type) %>%
+  count() %>%
+  arrange(desc(n)) %>%
+  kable(caption = "Broj objava prema vrsti i profilu na FB") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+
+
+hdz %>%
+  filter(source == "Twitter") %>%
+#  filter(type != "comment") %>%
+  group_by(author,type) %>%
+  count() %>%
+  arrange(desc(n)) %>%
+  kable(caption = "Broj objava prema vrsti i profilu na Twitteru") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+
+
+hdz %>%
+  group_by(author,source) %>%
+  summarise(Likes = sum(likes, na.rm = TRUE)) %>%
+  arrange(desc(Likes)) %>% 
+  kable(caption = "Broj like-ova prema autoru i platformi") %>%
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+```
+
+**Kolika je raspršenost pojedinaca (profila) koji iznose svoja mišljenja i stavove o Hrvatskoj demokratskoj zajednici (objavljuju li uvijek isti profili objave o HDZ-u)**  
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+hdz %>%
+  filter(source == "Facebook") %>%
+  filter(type != "comment") %>%
+  group_by(author) %>%
+  summarise( BrojObjava = n()) %>%
+  arrange(desc(BrojObjava)) %>%
+  ggplot(.,aes(BrojObjava)) + 
+  geom_histogram() 
+  
+  
+  
+  
+  
+```
+
+
+**Postoje li čvorišta iz kojih kreće u prosjeku relativno veći broj objava o Hrvatskoj demokratskoj zajednici te definirati doseg objava iz čvorišta**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+hdz %>%
+  filter(source == "Facebook") %>%
+  filter(type != "comment") %>%
+  mutate(UkupnoObjava = n()) %>%
+  group_by(author) %>%
+  mutate(PoAutoru = n()) %>%
+  summarise(Udio = (PoAutoru / UkupnoObjava)*100) %>%
+  distinct(author,Udio) %>%
+  arrange(desc(Udio)) %>%
+  kable(caption = "Udio objava u ukupnim objavama po profilu") %>% 
+  kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+
+```
+
+  
+```{r, eval=FALSE,echo=FALSE}
 hdz %>%
   group_by(type,source) %>%
   summarise(Broj = n()) %>%
