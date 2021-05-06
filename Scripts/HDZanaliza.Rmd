@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
 ```{r paketi, echo=FALSE, message=FALSE, warning=FALSE}
@@ -113,6 +113,7 @@ stop_corpus <- my_stop_words %>%
 ### Općenito
 <br>
 Podatci se odnose na objave na Twitteru i Facebook-u u razdoblju od 10/04/2021 do 05/05/2021 i uključuju 52.300 objava.
+<br>
 <br>
 **Koliko često korisnici digitalnih platformi Facebook i Twitter spominju Hrvatsku demokratsku zajednicu u svojim objavama na Facebooku i Twitteru**
 <br>
@@ -230,7 +231,9 @@ hdz %>%
   ggplot(.,aes(BrojObjava)) + 
   geom_histogram(bins=70) + 
   ggtitle("Raspršenost objava") +
-  theme_bw()
+  xlab("Broj objava") + 
+  ylab("Broj korisnika") +
+  theme_bw() 
 
 hdz %>%
   filter(source == "Facebook") %>%
@@ -631,6 +634,8 @@ Prvi oblak se odnosi na unigrame.
 Drugi oblak su bigrami.
 
 ```{r oblak, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=4}
+pal <- brewer.pal(8,"Dark2")
+
 
 hdz %>%
   unnest_tokens(word, text) %>%
@@ -645,7 +650,7 @@ hdz %>%
 
 
 wcl %>%
-  with(wordcloud(word, n, max.words = 150, colors =  c("#56B4E9", "#E69F00"))) 
+  with(wordcloud(word, n, max.words = 150, colors =  pal)) 
 
 
 # BIGRAMI
@@ -680,12 +685,15 @@ bigrams_united <- bigrams_filtered %>%
 
 ```
 
-```{r oblak2, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=5}
+```{r oblak2, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE, fig.height=5}
+pal <- brewer.pal(8,"Dark2")
+
+#
 bigrams_united %>%
-  group_by(bigram) %>%
-  tally %>%
-  filter(n < 58) %>%
-  with(wordcloud(bigram, n, max.words = 150, colors =  c("#56B4E9", "#E69F00")))
+#  group_by(bigram) %>%
+#  tally() %>%
+#  filter(n > 30) %>%
+  with(wordcloud(bigram, n, max.words = 60, colors =  pal))
 ```
 
 ### Sentiment
@@ -746,7 +754,6 @@ sm %>%
 grid.arrange( gg_sentiment_kroz_vrijeme, gg_doprinos_sentimentu, nrow = 2, top = "Prikaz sentimenta" )
 ```
 
-### Tematska analiza
 
 ```{r tematska, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE, fig.height=7}
 ## Tematska ----
