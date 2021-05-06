@@ -33,7 +33,7 @@ library(kableExtra)
 ```
 
 ```{r podatci, echo=FALSE, message=FALSE, warning=FALSE}
-hdz2 <- read.csv2("../Data/HDZscv.csv") %>%
+hdz2 <- read.csv2("../Data/HDZallCSV.csv") %>%
   select(X.3) %>%
   row_to_names(.,1) %>%
   mutate(Published = substr(Published,1,10)) #%>%
@@ -44,13 +44,15 @@ Datum  <- mutate(hdz2, b2= as.Date(Published, format= "%d.%m.%Y")) %>%
   rename(Datum =b2)
 
 
-hdz <- readxl::read_excel("../Data/HDZ.xlsx") %>% 
+hdz <- readxl::read_excel("../Data/HDZall.xlsx") %>% 
   row_to_names(.,1) %>% 
   clean_names() %>%
   select(-c(1,17:25,28:33,37:41)) %>%
   select(-published,-indexed,-category,-image,-languages) %>%
   cbind.data.frame(Datum)
 ```
+
+
 
 ```{r leksikoni, echo=FALSE, message=FALSE, warning=FALSE}
 source("../Mfiles/mfiles.R")
@@ -110,6 +112,7 @@ stop_corpus <- my_stop_words %>%
 
 ### Općenito
 <br>
+Podatci se odnose na objave na Twitteru i Facebook-u u razdoblju od 10/04/2021 do 05/05/2021 i uključuju 52.300 objava.
 <br>
 **Koliko često korisnici digitalnih platformi Facebook i Twitter spominju Hrvatsku demokratsku zajednicu u svojim objavama na Facebooku i Twitteru**
 <br>
@@ -225,7 +228,7 @@ hdz %>%
   summarise( BrojObjava = n()) %>%
   arrange(desc(BrojObjava)) %>%
   ggplot(.,aes(BrojObjava)) + 
-  geom_histogram() + 
+  geom_histogram(bins=70) + 
   ggtitle("Raspršenost objava") +
   theme_bw()
 
@@ -381,6 +384,10 @@ hdz %>% filter(source == "Facebook") %>%
 <br>
 <br>
 
+<br>
+Ovaj dio se odnosi na ukupni sadržaj (pri tome se misli na orginalni i neorginalni):
+<br>
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -403,7 +410,7 @@ hdz %>% filter(source == "Twitter") %>%
   summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
   distinct() %>%
   arrange(desc(UdioOrig)) %>%
-  kable(caption = "Udio originalnog sadržaja na Twitteru %")
+  kable(caption = "Udio sadržaja na Twitteru %")
   
 ```
 
@@ -419,7 +426,7 @@ hdz %>% filter(source == "Facebook") %>%
   summarise(UdioOrig = (PoVrsti / Ukupno)*100) %>%
   distinct() %>%
   arrange(desc(UdioOrig)) %>%
-  kable(caption = "Udio originalnog sadržaja na FB %")
+  kable(caption = "Udio sadržaja na FB %")
 
 ```
 
@@ -431,13 +438,19 @@ hdz %>%
   mutate(UkRetw = sum(retweets)) %>%
   group_by(author) %>%
   summarise(Retweet = sum(retweets, na.rm = TRUE)) %>%
-  arrange(desc(Retweet))
+  arrange(desc(Retweet)) %>%
+  kable() %>%
+    kable_styling() %>%
+    scroll_box(width = "500px", height = "400px")
 ```
 
 **Atributi koji najčešće spominju u objavama u kojima se spominje Hrvatska demokratska zajednica te prepoznati sentiment (pozitivno, negativno, neutralno) tih atributa**
 <br>
 <br>
 ### Najčešći unigrami i bigrami
+
+
+
 
 ```{r najbitnije_rijeci, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -506,6 +519,10 @@ bigrams_united %>%
 
 ```
 
+
+Analiza uključuje `r nrow(rijeci_clean)` riječi (unigrama,atributa) i `r nrow(kandidati_bigram)` bigrama. 
+
+
 ### Platforme
 
 Tablica pokazuje broj objava po platformi.
@@ -514,7 +531,7 @@ Prva grafika prikazuje broj objava kroz vrijeme.
 
 Druga grafika prikazuje zastupljenos riječi na platformama.
 
-```{r platforme, echo=FALSE, message=FALSE, warning=FALSE}
+```{r platforme, echo=FALSE, message=FALSE, warning=FALSE, fig.width=10}
 
 
 prosjek <- hdz %>% 
@@ -807,14 +824,14 @@ gg_tematska
 
 ### Riječi kroz vrijeme
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=7}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE, fig.height=7, fig.width=10}
 
 rijeci_clean %>%
  # mutate(Datum = floor_date(dejt, "quarter")) %>% 
   group_by(Datum) %>%
   count(word) %>% 
   mutate(gn = sum(n)) %>% 
-  filter(word %in% c("pupavac", "milanović", "plenković", "vlada","sabor","korupcija","sdp", "janaf","pošta","hbor")) %>%
+  filter(word %in% c("pupavac", "milanović", "plenković", "vlada","sabor","korupcija","sdp", "janaf","sdss","hbor")) %>%
   ggplot(., aes(Datum, n / gn)) + 
   geom_point() +
   geom_smooth() +
