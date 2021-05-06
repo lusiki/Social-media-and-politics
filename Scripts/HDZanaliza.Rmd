@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 ```
 
 ```{r paketi, echo=FALSE, message=FALSE, warning=FALSE}
@@ -640,6 +640,7 @@ pal <- brewer.pal(8,"Dark2")
 hdz %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_corpus, by = "word") %>%
+  filter(!str_detect(word, "^[0-9]")) %>% 
   group_by(word) %>%
   count() %>%
   ungroup() %>%
@@ -688,12 +689,14 @@ bigrams_united <- bigrams_filtered %>%
 ```{r oblak2, echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE, fig.height=5}
 pal <- brewer.pal(8,"Dark2")
 
+ujedinjeniBIGS <- bigrams_united
 #
-bigrams_united %>%
-#  group_by(bigram) %>%
-#  tally() %>%
-#  filter(n > 30) %>%
-  with(wordcloud(bigram, n, max.words = 60, colors =  pal))
+ujedinjeniBIGS %>%
+  rename(bi = bigram, broj = n) %>%
+ # group_by(bigram) %>%
+ # tally() %>%
+ # filter(n > 50) %>%
+  with(wordcloud(bi, broj, max.words = 150, colors =  pal))
 ```
 
 ### Sentiment
